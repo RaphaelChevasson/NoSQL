@@ -1,0 +1,52 @@
+CREATE KEYSPACE meteo_server
+WITH replication = 
+	{
+		'class': 'SimpleStrategy',
+		'replication_factor':1
+	};
+
+USE meteo_server;
+
+// On cree la table en mettant bien en clé primaire id,
+// car on veut faire des recherche avec des contraintes d'égalité dessus
+// et date en clé de partitionnement car on veut appliquer des contraintes d'inégalité dessus
+
+ CREATE TABLE data_meteo (
+ 	id  int ,
+    location_lat float ,
+    location_long float ,
+    date timestamp ,
+    temperature float ,
+    moisture float ,
+    PRIMARY KEY(id, date)
+    );
+
+// On ajoute 5 lignes pour tester nos requètes
+
+INSERT INTO data_meteo
+		(id, location_lat, location_long, date, temperature, moisture)
+	VALUES (1, 12.0, 15.3620, '1996-12-21', 25.3, 8);
+
+INSERT INTO data_meteo
+		(id, location_lat, location_long, date, temperature, moisture)
+	VALUES (2, 48.5632, 82.2597, '1996-12-22', 24, 7);
+
+INSERT INTO data_meteo
+		(id, location_lat, location_long, date, temperature, moisture)
+	VALUES (3, 52.6486, 89.2674, '1996-12-23', 25.3, 8);
+
+INSERT INTO data_meteo
+		(id, location_lat, location_long, date, temperature, moisture)
+	VALUES (4, 68.2149, 96.2658, '1996-12-24', 26.9, 10);
+
+INSERT INTO data_meteo
+		(id, location_lat, location_long, date, temperature, moisture)
+	VALUES (5, 41.2356, 56.2574, '1996-12-25', 21.0, 8);
+
+// On sélectionne toutes les lignes où id vaut 1
+
+SELECT temperature, moisture FROM data_meteo WHERE id = 1;
+
+// On selectionne toutes les lignes où id vaut 1 et avec une date antérieure au 23 décembre 1996
+
+SELECT temperature, moisture FROM data_meteo WHERE id = 1 AND date < '1996-12-23';

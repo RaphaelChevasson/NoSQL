@@ -1,0 +1,281 @@
+//////////////////////////////////////////////////////////////////////////////
+// création de la base
+//////////////////////////////////////////////////////////////////////////////
+
+use quidditch
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// création des équipes
+//////////////////////////////////////////////////////////////////////////////
+
+db.equipes.insert({
+    nom: "gryfondor",
+    couleur: "rouge",
+    stade: "poudlard",
+    effectifs: [] 
+})
+
+db.equipes.insert({
+    nom: "serpentard",
+    couleur: "vert",
+    stade: "beauxbaton",
+    effectifs: [] 
+})
+
+db.equipes.insert({
+    nom: "poufsouffle",
+    couleur: "or",
+    stade: "durmstrang",
+    effectifs: [] 
+})
+
+db.equipes.insert({
+    nom: "serdaigle",
+    couleur: "bleu",
+    stade: "telecom",
+    effectifs: [] 
+})
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// création des joueurs
+//////////////////////////////////////////////////////////////////////////////
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "potter",
+    prenom: "harry",
+    date_de_naissance: new Date(1996, 05, 20),
+    taille: 181,
+    poids: 83,
+    poste: "attrapeur"
+})
+db.equipes.findAndModify({querry: {name: "gryfondor"}, update: {$push: {effectifs: id_joueur}}})
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "dubois",
+    prenom: "olivier",
+    date_de_naissance: new Date(1996, 11, 10),
+    taille: 175,
+    poids: 81,
+    poste: "capitaine"
+})
+db.equipes.findAndModify({querry: {name: "gryfondor"}, update: {$push: {effectifs: id_joueur}}})
+
+//////////////////////////////////////////////////////////////////////////////
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "flint",
+    prenom: "marcus",
+    date_de_naissance: new Date(1968, 10, 05),
+    taille: 174,
+    poids: 52,
+    poste: "capitaine"
+})
+db.equipes.findAndModify({querry: {name: "serpentard"}, update: {$push: {effectifs: id_joueur}}})
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "malefoy",
+    prenom: "drago",
+    date_de_naissance: new Date(1996, 07, 21),
+    taille: 178,
+    poids: 96,
+    poste: "attrapeur"
+})
+db.equipes.findAndModify({querry: {name: "serpentard"}, update: {$push: {effectifs: id_joueur}}})
+
+//////////////////////////////////////////////////////////////////////////////
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "diggory",
+    prenom: "cedric",
+    date_de_naissance: new Date(1996, 09, 12),
+    taille: 124,
+    poids: 78,
+    poste: "attrapeur"
+})
+db.equipes.findAndModify({querry: {name: "poufsouffle"}, update: {$push: {effectifs: id_joueur}}})
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "smith",
+    prenom: "zacharias",
+    date_de_naissance: new Date(1998, 01, 25),
+    taille: 178,
+    poids: 95,
+    poste: "capitaine"
+})
+db.equipes.findAndModify({querry: {name: "poufsouffle"}, update: {$push: {effectifs: id_joueur}}})
+
+//////////////////////////////////////////////////////////////////////////////
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "chang",
+    prenom: "cho",
+    date_de_naissance: new Date(1999, 07, 29),
+    taille: 182,
+    poids: 65,
+    poste: "attrapeur"
+})
+db.equipes.findAndModify({querry: {name: "serdaigle"}, update: {$push: {effectifs: id_joueur}}})
+
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "davies",
+    prenom: "roger",
+    date_de_naissance: new Date(1998, 07, 19),
+    taille: 150,
+    poids: 95,
+    poste: "capitaine"
+})
+db.equipes.findAndModify({querry: {name: "serdaigle"}, update: {$push: {effectifs: id_joueur}}})
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// création des matchs
+//////////////////////////////////////////////////////////////////////////////
+
+db.matchs.insert({
+    equipe_domicile: "gryfondor",
+    equipe_exterieure: "serpentard",
+    competition: "tournois d'automne",
+    score_equipe_domicile: 120,
+    score_equipe_exterieure: 30,
+    joueurs_equipe_domicile: [
+        {
+            prenom: "harry",
+            note: 20
+        },
+        {
+            prenom: "olivier",
+            note: 17
+        }
+    ],
+    joueurs_equipe_exterieure: [
+        {
+            prenom: "flint",
+            note: 5
+        },
+        {
+            prenom: "malefoy",
+            note: 12
+        }
+    ]
+})
+
+db.matchs.insert({
+    equipe_domicile: "gryfondor",
+    equipe_exterieure: "serdaigle",
+    competition: "tournois d'automne",
+    score_equipe_domicile: 40,
+    score_equipe_exterieure: 50,
+    joueurs_equipe_domicile: [
+        {
+            prenom: "harry",
+            note: 11
+        },
+        {
+            prenom: "olivier",
+            note: 13
+        }
+    ],
+    joueurs_equipe_exterieure: [
+        {
+            prenom: "cho",
+            note: 15
+        },
+        {
+            prenom: "roger",
+            note: 13
+        }
+    ]
+})
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// optimisation des requêtres
+//////////////////////////////////////////////////////////////////////////////
+
+// optimisation des requêtes par nom d'équipe
+db.equipes.ensureIndex({nom: 1})
+
+// optimisation des requêtes par nom de joueur
+db.joueurs.ensureIndex({prenom: 1}) // pour les requêtes sur le prénom seulement
+db.joueurs.ensureIndex({nom: 1}) // pour les requêtes sur le nom seulement
+db.joueurs.ensureIndex({nom: 1, prenom: -1}) // pour les requêtes sur le doublet nom, prénom
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// expression des requêtes de sélection 
+//////////////////////////////////////////////////////////////////////////////
+
+// requête de sélection des joueurs pour un poste donné et un âge maximum
+db.joueurs.find({poste: "<poste_joueur>", date_de_naissance: {$lt: new Date(new Date() - <age_joueur_maximum> * 365*24*60*60*1000)}})
+// ex : requête de sélection des attrapeur de moins de 20 ans
+db.joueurs.find({poste: "attrapeur", date_de_naissance: {$lt: new Date(new Date() - 20 * 365*24*60*60*1000)}})
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// expression des requêtes d'insertion
+//////////////////////////////////////////////////////////////////////////////
+
+// insertion d'une nouvelle équipe
+db.equipes.insert({
+    nom: "<nom_equipe>",
+    couleur: "<couleur_equipe>",
+    stade: "<stade_equipe>",
+    effectifs: [] 
+})
+
+// insertion d'un nouveau joueur
+id_joueur = ObjectId()
+db.joueurs.insert({
+    _id: id_joueur,
+    nom: "<nom_joueur>",
+    prenom: "<prenom_joueur>",
+    date_de_naissance: new Date(<annee>, <mois>, <jour>),
+    taille: <taille_joueur>,
+    poids: <poids_joueur>,
+    poste: "<poste_joueur>" // peut être "capitaine", "attrapeur", "poursuiveur", "guardien" ou "batteur"
+})
+db.equipes.findAndModify({querry: {name: "gryfondor"}, update: {$push: {effectifs: id_joueur}}})
+
+// insertion d'un nouveau match
+db.matchs.insert({
+    equipe_domicile: "<nom_equipe_domicile>",
+    equipe_exterieure: "<nom_equipe_exterieure>",
+    competition: "<nom_competition>",
+    score_equipe_domicile: <score_equipe_domicile>,
+    score_equipe_exterieure: <score_equipe_exterieure>,
+    joueurs_equipe_domicile: <tableau d'objets de type {prenom: "<prenom_joueur>", note: <note_joueur>}>
+})
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+// construction d'une collection 
+//////////////////////////////////////////////////////////////////////////////
+
+// collection stockant les joueurs ayant joué au moins X (par ex : 3) matchs,
+// avec pour chaque joueur la moyenne de ses notes :
+nous avons beaucoup cherché, mais n'avons pas réussi à exprimer cette requête.

@@ -1,0 +1,122 @@
+////////////////////////////////////////////////////////////////////////////////////////////
+// Entreprises
+////////////////////////////////////////////////////////////////////////////////////////////
+
+CREATE (e:ENTREPRISE {nom:"Airbus" , secteur:"Aviation", description:"Leader europeen", taille:3000}) RETURN e;
+CREATE (e:ENTREPRISE {nom:"STAS" , secteur:"Transport", description:"Transports publics Saint-Etienne", taille:123}) RETURN e;
+CREATE (e:ENTREPRISE {nom:"Google" , secteur:"Informatique", description:"Geant de la silicon valley", taille:6500}) RETURN e;
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Utilisateurs
+////////////////////////////////////////////////////////////////////////////////////////////
+
+CREATE (u:UTILISATEUR {nom: "Harry Potter", description:"Sorcier", competences:"C++, anglais courant"}) RETURN u;
+CREATE (u:UTILISATEUR {nom: "Jean Michel", description:"Eleve ingenieur", competences:"programmation, procrastination"}) RETURN u;
+CREATE (u:UTILISATEUR {nom: "Samy Roux", description:"Guide", competences:"Orientation spaciale"}) RETURN u;
+CREATE (u:UTILISATEUR {nom: "Pierre Roche", description:"Aime manger", competences:"Cuisine"}) RETURN u;
+CREATE (u:UTILISATEUR {nom: "Rond Carre", description:"Voyageur", competences:"voyager"}) RETURN u;
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Relations Utilisateur-Entreprise
+////////////////////////////////////////////////////////////////////////////////////////////
+
+MATCH (u:UTILISATEUR {nom: "Harry Potter"})
+MATCH (e:ENTREPRISE {nom:"Airbus"})
+CREATE (u)-[t:travaillePour {debut:date('2017-10-01'), fin:date('2018-02-06')}]->(e)
+RETURN u,t,e;
+
+MATCH (u:UTILISATEUR {nom: "Harry Potter"})
+MATCH (e:ENTREPRISE {nom:"STAS"})
+CREATE (u)-[t:travaillePour {debut:date('2018-02-06'), fin:date()}]->(e)
+RETURN u,t,e;
+
+MATCH (u:UTILISATEUR {nom: "Jean Michel"})
+MATCH (e:ENTREPRISE {nom:"Airbus"})
+CREATE (u)-[t:travaillePour {debut:date('2002-12-01'), fin:date('2018-01-06')}]->(e)
+RETURN u,t,e;
+
+MATCH (u:UTILISATEUR {nom: "Jean Michel"})
+MATCH (e:ENTREPRISE {nom:"Google"})
+CREATE (u)-[t:travaillePour {debut:date('2018-01-06'), fin:date()}]->(e)
+RETURN u,t,e;
+
+MATCH (u:UTILISATEUR {nom: "Samy Roux"})
+MATCH (e:ENTREPRISE {nom:"STAS"})
+CREATE (u)-[t:travaillePour {debut:date('1999-01-05'), fin:date()}]->(e)
+RETURN u,t,e;
+
+MATCH (u:UTILISATEUR {nom: "Samy Roux"})
+MATCH (e:ENTREPRISE {nom:"Airbus"})
+CREATE (u)-[t:travaillePour {debut:date('1968-05-12'), fin:date('1999-01-05')}]->(e)
+RETURN u,t,e;
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Relations utlisateur-utlisateur
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// A travaillé avec
+MATCH (u1:UTILISATEUR {nom: "Harry Potter"})
+MATCH (u2:UTILISATEUR {nom: "Jean Michel"})
+CREATE (u1)-[at:aTravailleAvec]->(u2)
+RETURN u1,at,u2;
+
+MATCH (u1:UTILISATEUR {nom: "Harry Potter"})
+MATCH (u2:UTILISATEUR {nom: "Samy Roux"})
+CREATE (u1)-[at:aTravailleAvec]->(u2)
+RETURN u1,at,u2;
+
+// Connait
+MATCH (u1:UTILISATEUR {nom: "Harry Potter"})
+MATCH (u2:UTILISATEUR {nom: "Jean Michel"})
+CREATE (u1)-[c:connait]->(u2)
+RETURN u1,c,u2;
+
+MATCH (u1:UTILISATEUR {nom: "Harry Potter"})
+MATCH (u2:UTILISATEUR {nom: "Samy Roux"})
+CREATE (u1)-[c:connait]->(u2)
+RETURN u1,c,u2;
+
+MATCH (u1:UTILISATEUR {nom: "Harry Potter"})
+MATCH (u2:UTILISATEUR {nom: "Pierre Roche"})
+CREATE (u1)-[c:connait]->(u2)
+RETURN u1,c,u2;
+
+MATCH (u1:UTILISATEUR {nom: "Pierre Roche"})
+MATCH (u2:UTILISATEUR {nom: "Jean Michel"})
+CREATE (u1)-[c:connait]->(u2)
+RETURN u1,c,u2;
+
+MATCH (u1:UTILISATEUR {nom: "Samy Roux"})
+MATCH (u2:UTILISATEUR {nom: "Rond Carre"})
+CREATE (u1)-[c:connait]->(u2)
+RETURN u1,c,u2;
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// Requêtes de recherche d’entreprises ou d’utilisateurs par nom
+////////////////////////////////////////////////////////////////////////////////////////////
+
+MATCH (e:ENTREPRISE {nom: "Airbus"}) return e;
+MATCH (u:UTILISATEUR {nom: "Harry Potter"}) return u;
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// suggestions de relations
+////////////////////////////////////////////////////////////////////////////////////////////
+
+// Utilisateurs ayant travaillé en même temps qu’un utilisateur donné dans une entreprise donnée
+MATCH (u1:UTILISATEUR { nom: 'Harry Potter' })-[:aTravailleAvec]-(u2:UTILISATEUR)
+MATCH (u2) -[tp2:travaillePour]- (e:ENTREPRISE {nom:'Airbus'}) // On vérifie qu'ils ont bien travaillé pour l'entreprise donnée
+MATCH (u1) -[tp1:travaillePour]- (e)
+WITH tp1.debut AS d1, tp1.fin AS f1, tp2.debut AS d2, tp2.fin AS f2, u2.nom as n
+WHERE ((d1 <= d2 AND f1 >= d2) OR (d2 <= d1 AND f2 >= d1)) // On vérifie qu'ils ont bien travaillé en même temps
+RETURN n;
+
+// Utilisateurs connus par les connaissances d’un utilisateur donné
+MATCH (u1:UTILISATEUR { nom: 'Harry Potter' })-[:connait]-(u2:UTILISATEUR)
+MATCH (u2)-[:connait]-(u3:UTILISATEUR)
+WHERE u3 <> u1
+RETURN u3.nom;
+
+MATCH (u1:UTILISATEUR { nom: 'Rond Carre' })-[:connait]-(u2:UTILISATEUR)
+MATCH (u2)-[:connait]-(u3:UTILISATEUR)
+WHERE u3 <> u1
+RETURN u3.nom;

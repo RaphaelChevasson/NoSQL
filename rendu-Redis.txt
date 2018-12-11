@@ -1,0 +1,47 @@
+// Opérateurs
+hmset operateur:1 nom "Michel" prenom "Jean" statut "Disponible" 
+hmset operateur:2 nom "Jacques" prenom "Olivier" statut "Disponible"
+hmset operateur:3 nom "Potter" prenom "Harry" statut "Disponible"
+hmset operateur:4 nom "Tjan" prenom "Miaou" statut "Indisponible"
+
+// Appels
+// Nouvel appel entrant
+hmset appel:1 heure "14h00" numero "06 66 66 66 66" statut "Non affecte" duree "00h00" operateur "" description ""
+
+//Affectation à un opérateur
+// On regarde le statut des opérateurs et on affecte un opérateur disponible
+hget operateur:1 statut
+hset operateur:1 statut "Appel en cours"
+hmset appel:1 statut "En cours" operateur "1"
+
+// Nouvel appel entrant
+hmset appel:2 heure "14h15" numero "06 58 66 88 77" statut "Non affecte" duree "00h00" operateur "" description ""
+
+//Affectation à un opérateur
+hget operateur:1 statut
+hget operateur:2 statut
+hset operateur:2 statut "Appel en cours"
+hmset appel:2 statut "En cours" operateur "2"
+
+//Fin appel 1
+hmset appel:1 statut "Termine" duree "00h20" description "Resiliation abonnement"
+hget appel:1 operateur
+hset operateur:1 statut "Disponible"
+
+// Nouvel appel entrant
+hmset appel:3 heure "14h30" numero "06 00 66 88 77" statut "Non affecte" duree "00h00" operateur "" description ""
+
+//Affectation à un opérateur
+hget operateur:1 statut
+hset operateur:1 statut "Appel en cours"
+hmset appel:3 statut "En cours" operateur "1"
+
+//Fin appel 3
+hmset appel:3 statut "Terminé" duree "00h15" description "Probleme pc lent"
+hget appel:3 operateur
+hset operateur:1 statut "Disponible"
+
+//Fin appel 2
+hmset appel:2 statut "Terminé" duree "01h20" description "Achat materiel"
+hget appel:2 operateur
+hset operateur:2 statut "Disponible"
